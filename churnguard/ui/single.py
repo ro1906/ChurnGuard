@@ -27,7 +27,7 @@ PRESETS = {
         "StreamingMovies": "Yes", "Contract": "Month-to-month", "PaperlessBilling": "Yes",
         "PaymentMethod": "Electronic check", "MonthlyCharges": 95.0,
     },
-    "Average customer": {
+    "Stable customer": {
         "gender": "Male", "SeniorCitizen": "No", "Partner": "Yes", "Dependents": "No",
         "tenure": 24, "PhoneService": "Yes", "MultipleLines": "No",
         "InternetService": "DSL", "OnlineSecurity": "No", "OnlineBackup": "Yes",
@@ -176,10 +176,11 @@ def render() -> None:
 
         level = result["risk_level"]
         st.plotly_chart(_gauge(result["probability"], level, predictor.threshold), width="stretch")
-        a, b, c = st.columns(3)
-        a.markdown(risk_badge(level), unsafe_allow_html=True)
-        b.metric("Model decision", "Likely to churn" if result["predicted_churn"] else "Likely to stay")
-        c.metric("Monthly revenue at stake", f"{customer['MonthlyCharges']:,.2f}")
+        decision = "Likely to churn" if result["predicted_churn"] else "Likely to stay"
+        st.markdown(risk_badge(level), unsafe_allow_html=True)
+        a, b = st.columns(2)  # two wide columns so the decision text is never cut off
+        a.metric("Model decision", decision)
+        b.metric("Monthly revenue at stake", f"{customer['MonthlyCharges']:,.2f}")
         st.caption(
             f"Risk bands: Low below {config.LOW_RISK_MAX:.0%}, High from {config.HIGH_RISK_MIN:.0%}. "
             f"The black line marks the model's decision threshold ({predictor.threshold:.0%})."
