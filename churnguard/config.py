@@ -17,6 +17,9 @@ DATA_SOURCE_URL = (
     "master/data/Telco-Customer-Churn.csv"
 )
 
+# Symbol shown before money amounts in the UI. Change to your own currency.
+CURRENCY = "$"
+
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
 CV_FOLDS = 5

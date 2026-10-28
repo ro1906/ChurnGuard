@@ -12,56 +12,37 @@ import streamlit as st
 from churnguard import config
 from churnguard.data import load_dataset
 from churnguard.predict import ChurnPredictor, load_predictor
+from churnguard.ui import theme
+from churnguard.ui.theme import inject_css, risk_badge  # noqa: F401 - re-exported for the pages
 
 logger = logging.getLogger(__name__)
 
-RISK_COLORS = {"Low": "#2a9d8f", "Medium": "#e9a23b", "High": "#d1495b"}
+RISK_COLORS = {"Low": theme.KELP, "Medium": theme.AMBER, "High": theme.CORAL}
 RISK_ORDER = config.RISK_LEVELS
-UP_COLOR = "#d1495b"  # raises churn risk
-DOWN_COLOR = "#3a7ca5"  # lowers churn risk
-ACCENT = "#3a7ca5"
+UP_COLOR = theme.CORAL  # raises churn risk
+DOWN_COLOR = theme.WATER  # lowers churn risk
+ACCENT = theme.WATER
+
+FONT = "Figtree, system-ui, sans-serif"
 
 
-def inject_css() -> None:
-    st.markdown(
-        """
-        <style>
-        .block-container {padding-top: 2rem; max-width: 1250px;}
-        [data-testid="stMetric"] {
-            background: var(--secondary-background-color);
-            border-radius: 10px;
-            padding: 12px 16px;
-        }
-        .risk-badge {
-            display: inline-block; padding: 4px 14px; border-radius: 999px;
-            color: white; font-weight: 600; font-size: 0.95rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def header(title: str, subtitle: str) -> None:
-    st.title(title)
-    st.caption(subtitle)
-
-
-def risk_badge(level: str) -> str:
-    """HTML pill for a risk level. Only ever fed our own fixed level names."""
-    color = RISK_COLORS.get(level, "#888")
-    return f'<span class="risk-badge" style="background:{color}">{level} risk</span>'
-
-
-def style_figure(fig: go.Figure, height: int = 320, title: str | None = None) -> go.Figure:
+def style_figure(fig: go.Figure, height: int = 320, title: str | None = None, dark: bool = False) -> go.Figure:
+    """Apply the ChurnGuard look to a Plotly figure (light paper or dark tide background)."""
+    text = "#DCEBE8" if dark else theme.INK
+    grid = "rgba(255,255,255,0.10)" if dark else "rgba(12,46,59,0.08)"
     fig.update_layout(
-        template="plotly_white",
+        template="plotly_dark" if dark else "plotly_white",
         height=height,
-        margin={"l": 10, "r": 10, "t": 50 if title else 20, "b": 10},
-        title={"text": title, "font": {"size": 15}} if title else None,
+        margin={"l": 10, "r": 10, "t": 54 if title else 20, "b": 10},
+        title={"text": title, "font": {"size": 17, "family": "Bricolage Grotesque, " + FONT}} if title else None,
+        font={"family": FONT, "color": text},
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        hoverlabel={"font": {"family": FONT}, "bordercolor": "rgba(0,0,0,0)"},
     )
+    tick = {"size": 14, "color": text}
+    fig.update_xaxes(gridcolor=grid, zerolinecolor=grid, linecolor=grid, tickfont=tick)
+    fig.update_yaxes(gridcolor=grid, zerolinecolor=grid, linecolor=grid, tickfont=tick)
     return fig
 
 

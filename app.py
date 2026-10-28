@@ -7,31 +7,35 @@ import streamlit as st
 
 from churnguard.ui import batch, overview, performance, single
 from churnguard.ui.common import get_predictor, inject_css
+from churnguard.ui.theme import band
 
-st.set_page_config(page_title="ChurnGuard", page_icon=":material/shield:", layout="wide")
+st.set_page_config(
+    page_title="ChurnGuard",
+    page_icon=":material/water_drop:",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 inject_css()
+st.logo("static/logo.svg", size="large")
 
-pages = [
-    st.Page(
-        overview.render, title="Overview", icon=":material/dashboard:", url_path="overview", default=True
+pages = {
+    "overview": st.Page(
+        overview.render, title="Overview", icon=":material/water_drop:", url_path="overview", default=True
     ),
-    st.Page(
-        single.render, title="Predict a customer", icon=":material/person_search:", url_path="predict"
+    "predict": st.Page(single.render, title="Check a customer", icon=":material/person_search:", url_path="predict"),
+    "batch": st.Page(batch.render, title="Score a list", icon=":material/upload_file:", url_path="batch"),
+    "performance": st.Page(
+        performance.render, title="Model quality", icon=":material/monitoring:", url_path="performance"
     ),
-    st.Page(batch.render, title="Batch scoring", icon=":material/upload_file:", url_path="batch"),
-    st.Page(
-        performance.render,
-        title="Model performance",
-        icon=":material/monitoring:",
-        url_path="performance",
-    ),
-]
-navigation = st.navigation(pages)
+}
+st.session_state["_pages"] = pages  # lets pages build links to each other
+navigation = st.navigation(list(pages.values()), position="top")
+navigation.run()
 
 predictor = get_predictor()
-st.sidebar.markdown("### ChurnGuard")
-st.sidebar.caption(
-    f"Model: {predictor.model_name}\n\nDecision threshold: {predictor.threshold:.2f}\n\n"
-    "Explainable churn prediction with SHAP."
-)
-navigation.run()
+with band("footer", "tide"):
+    st.html(
+        f'<div class="cg-footer"><b>ChurnGuard</b><span>Model: {predictor.model_name}</span>'
+        f"<span>Decision threshold: {predictor.threshold:.2f}</span>"
+        "<span>Built on the IBM Telco sample dataset. SHAP explains every prediction.</span></div>"
+    )

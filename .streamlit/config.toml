@@ -2,9 +2,33 @@
 headless = true
 maxUploadSize = 20
 enableXsrfProtection = true
+# Serves ./static (the bundled fonts and logo) at /app/static/...
+enableStaticServing = true
 
 [browser]
 gatherUsageStats = false
 
+[client]
+toolbarMode = "viewer"
+
 [theme]
-primaryColor = "#3a7ca5"
+base = "light"
+primaryColor = "#12788A"
+backgroundColor = "#EAF2EE"
+secondaryBackgroundColor = "#FBFDFC"
+textColor = "#0C2E3B"
+borderColor = "#CFE0DA"
+baseRadius = "large"
+font = "Figtree"
+headingFont = "Bricolage Grotesque"
+headingFontWeights = [800]
+
+[[theme.fontFaces]]
+family = "Figtree"
+url = "app/static/fonts/figtree.woff2"
+weight = "300 900"
+
+[[theme.fontFaces]]
+family = "Bricolage Grotesque"
+url = "app/static/fonts/bricolage.woff2"
+weight = "200 800"

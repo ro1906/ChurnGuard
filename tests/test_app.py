@@ -30,18 +30,23 @@ def test_main_app_boots_and_shows_overview():
     assert "Customers" in labels and "Monthly revenue at high risk" in labels
 
 
+def _html(at) -> str:
+    """All st.html bodies on the page, joined (the redesigned pages render through st.html)."""
+    return " ".join(el.proto.body for el in at.get("html"))
+
+
 def test_predict_page_starts_with_a_high_risk_example():
     at = _page("single").run()
     assert not at.exception
-    assert any("High risk" in m.value for m in at.markdown)
+    assert "High risk" in _html(at)
 
 
 def test_predict_page_updates_when_loading_a_loyal_example():
     at = _page("single").run()
     at.button[2].click().run()
     assert not at.exception
-    assert any("Low risk" in m.value for m in at.markdown)
-    assert any("No retention action needed" in m.value for m in at.markdown)
+    assert "Low risk" in _html(at)
+    assert "No retention action needed" in _html(at)
 
 
 def test_addons_are_disabled_without_internet_service():

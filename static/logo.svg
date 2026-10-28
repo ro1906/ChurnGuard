@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" width="220" height="48">
+  <g transform="translate(2 2)">
+    <path d="M6 10 H38 L34 40 Q34 44 30 44 H14 Q10 44 10 40 Z" fill="#7FD1D9" stroke="#0C2E3B" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M8 22 Q15 17 22 22 T36 22 L34.6 40 Q34 44 30 44 H14 Q10 44 9.6 40 Z" fill="#12788A"/>
+    <path d="M6 10 H38" stroke="#0C2E3B" stroke-width="7" stroke-linecap="round"/>
+    <path d="M23 32 q-5 6 0 8 q5 -2 0 -8z" fill="#F2574B"/>
+  </g>
+  <text x="56" y="33" font-family="Bricolage Grotesque, Arial Black, sans-serif" font-weight="800" font-size="27" letter-spacing="-1" fill="#0C2E3B">ChurnGuard</text>
+</svg>
