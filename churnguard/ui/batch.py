@@ -22,8 +22,17 @@ SOURCE_UPLOAD = "Upload a CSV"
 SOURCE_SAMPLE = "Use 500 sample customers"
 
 
+@st.cache_data(show_spinner="Scoring all demo customers...")
+def _score_all_demo() -> pd.DataFrame:
+    """The whole demo customer base with risk levels and reasons (about 5 seconds, then cached)."""
+    return get_predictor().score(get_dataset().drop(columns=[config.TARGET]))
+
+
 def _load_input() -> pd.DataFrame | None:
-    source = st.radio("Customer data", [SOURCE_UPLOAD, SOURCE_SAMPLE], horizontal=True)
+    source_all = f"Use all {len(get_dataset()):,} demo customers"
+    source = st.radio("Customer data", [source_all, SOURCE_SAMPLE, SOURCE_UPLOAD], horizontal=True)
+    if source == source_all:
+        return _score_all_demo()  # already scored, so render() skips scoring below
     if source == SOURCE_SAMPLE:
         return get_dataset().drop(columns=[config.TARGET]).sample(500, random_state=7)
 
@@ -156,7 +165,7 @@ def render() -> None:
         if df is None:
             return
         try:
-            scored = predictor.score(df)
+            scored = df if "churn_probability" in df.columns else predictor.score(df)
         except ValidationError as exc:
             st.error("The data could not be scored:")
             st.code(str(exc), language=None)

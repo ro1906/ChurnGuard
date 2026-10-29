@@ -56,6 +56,13 @@ def test_addons_are_disabled_without_internet_service():
     assert at.selectbox(key="in_TechSupport").disabled
 
 
+def test_batch_page_defaults_to_all_demo_customers():
+    at = _page("batch").run()
+    assert not at.exception
+    assert at.radio[0].value.startswith("Use all")
+    assert any(m.label == "Customers scored" and m.value == "7,043" for m in at.metric)
+
+
 def test_batch_page_scores_the_sample_customers():
     at = _page("batch").run()
     at.radio[0].set_value("Use 500 sample customers").run()
